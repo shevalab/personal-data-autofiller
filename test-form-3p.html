@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Autofiller Test — 3 Passengers (camelCase / bracket)</title>
+  <style>
+    :root { font-family: system-ui, sans-serif; background: #f3f6f9; color: #17202a; }
+    body { margin: 0; padding: 32px 16px; }
+    main { max-width: 980px; margin: 0 auto; }
+    h1 { margin-top: 0; }
+    form { display: grid; gap: 20px; }
+    fieldset { border: 1px solid #cbd5df; border-radius: 8px; background: #fff; padding: 20px; }
+    legend { padding: 0 8px; font-weight: 700; }
+    .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    label { display: grid; gap: 6px; font-weight: 600; }
+    input, select { box-sizing: border-box; width: 100%; border: 1px solid #9aa7b2; border-radius: 4px; padding: 9px 10px; font: inherit; }
+    #eventLog { min-height: 48px; margin: 0; padding: 12px; overflow: auto; background: #17202a; color: #d8e2eb; border-radius: 4px; white-space: pre-wrap; }
+    button { width: fit-content; padding: 10px 16px; border: 0; border-radius: 4px; background: #1769aa; color: #fff; font: inherit; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Autofiller Test Form — 3 Passengers (0-based bracket / camelCase)</h1>
+    <p class="intro">Three 0-based passengers using <code>travelers[N].fieldName</code> naming. Exercises bracket index detection (offset 0) and camelCase keywords.</p>
+
+    <form id="testForm">
+      <fieldset>
+        <legend>Traveler 0</legend>
+        <div class="fields">
+          <label>Title <select name="travelers[0].title" autocomplete="honorific-prefix"><option value="">—</option><option value="Mr">Mr</option><option value="Mrs">Mrs</option><option value="Ms">Ms</option><option value="Dr">Dr</option></select></label>
+          <label>Full name <input name="travelers[0].fullName" autocomplete="name" placeholder="Full name"></label>
+          <label>First name <input name="travelers[0].firstName" autocomplete="given-name" placeholder="First name"></label>
+          <label>Last name <input name="travelers[0].lastName" autocomplete="family-name" placeholder="Last name"></label>
+          <label>Gender <select name="travelers[0].gender" autocomplete="sex"><option value="">—</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select></label>
+          <label>Passport number <input name="travelers[0].passportNumber" placeholder="Passport number"></label>
+          <label>Issuing country <input name="travelers[0].issuingCountry" placeholder="Issuing country"></label>
+          <label>Date of birth <input type="date" name="travelers[0].dateOfBirth" autocomplete="bday"></label>
+          <label>Nationality <select name="travelers[0].nationality" autocomplete="country-name"><option value="">Choose</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="DE">Germany</option><option value="FR">France</option><option value="CA">Canada</option></select></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Traveler 1</legend>
+        <div class="fields">
+          <label>Title <select name="travelers[1].title" autocomplete="honorific-prefix"><option value="">—</option><option value="Mr">Mr</option><option value="Mrs">Mrs</option><option value="Ms">Ms</option><option value="Dr">Dr</option></select></label>
+          <label>Full name <input name="travelers[1].fullName" autocomplete="name" placeholder="Full name"></label>
+          <label>First name <input name="travelers[1].firstName" autocomplete="given-name" placeholder="First name"></label>
+          <label>Last name <input name="travelers[1].lastName" autocomplete="family-name" placeholder="Last name"></label>
+          <label>Gender <select name="travelers[1].gender" autocomplete="sex"><option value="">—</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select></label>
+          <label>Passport number <input name="travelers[1].passportNumber" placeholder="Passport number"></label>
+          <label>Issuing country <input name="travelers[1].issuingCountry" placeholder="Issuing country"></label>
+          <label>Date of birth <input type="date" name="travelers[1].dateOfBirth" autocomplete="bday"></label>
+          <label>Nationality <select name="travelers[1].nationality" autocomplete="country-name"><option value="">Choose</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="DE">Germany</option><option value="FR">France</option><option value="CA">Canada</option></select></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Traveler 2</legend>
+        <div class="fields">
+          <label>Title <select name="travelers[2].title" autocomplete="honorific-prefix"><option value="">—</option><option value="Mr">Mr</option><option value="Mrs">Mrs</option><option value="Ms">Ms</option><option value="Dr">Dr</option></select></label>
+          <label>Full name <input name="travelers[2].fullName" autocomplete="name" placeholder="Full name"></label>
+          <label>First name <input name="travelers[2].firstName" autocomplete="given-name" placeholder="First name"></label>
+          <label>Last name <input name="travelers[2].lastName" autocomplete="family-name" placeholder="Last name"></label>
+          <label>Gender <select name="travelers[2].gender" autocomplete="sex"><option value="">—</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select></label>
+          <label>Passport number <input name="travelers[2].passportNumber" placeholder="Passport number"></label>
+          <label>Issuing country <input name="travelers[2].issuingCountry" placeholder="Issuing country"></label>
+          <label>Date of birth <input type="date" name="travelers[2].dateOfBirth" autocomplete="bday"></label>
+          <label>Nationality <select name="travelers[2].nationality" autocomplete="country-name"><option value="">Choose</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="DE">Germany</option><option value="FR">France</option><option value="CA">Canada</option></select></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Contact details</legend>
+        <div class="fields">
+          <label>Phone <input name="phone" type="tel" autocomplete="tel" placeholder="Phone number"></label>
+          <label>Email <input name="email" type="email" autocomplete="email" placeholder="Email address"></label>
+        </div>
+      </fieldset>
+
+      <button type="button" id="showValues">Show current values</button>
+      <pre id="eventLog">Events will appear here when the extension fills a field.</pre>
+    </form>
+  </main>
+
+  <script>
+    const eventLog = document.getElementById('eventLog');
+    const trackedFields = document.querySelectorAll('input, select');
+    trackedFields.forEach((field) => {
+      field.addEventListener('input', () => { eventLog.textContent = `input event: ${field.name || field.id}`; });
+      field.addEventListener('change', () => { eventLog.textContent += `\nchange event: ${field.name || field.id}`; });
+      field.addEventListener('blur', () => { eventLog.textContent += `\nblur event: ${field.name || field.id}`; });
+    });
+    document.getElementById('showValues').addEventListener('click', () => {
+      eventLog.textContent = Array.from(trackedFields).map((f) => `${f.name || f.id}: ${f.value}`).join('\n');
+    });
+  </script>
+</body>
+</html>

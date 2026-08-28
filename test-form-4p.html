@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Autofiller Test — 4 Passengers (mixed conventions)</title>
+  <style>
+    :root { font-family: system-ui, sans-serif; background: #f3f6f9; color: #17202a; }
+    body { margin: 0; padding: 32px 16px; }
+    main { max-width: 1040px; margin: 0 auto; }
+    h1 { margin-top: 0; }
+    form { display: grid; gap: 20px; }
+    fieldset { border: 1px solid #cbd5df; border-radius: 8px; background: #fff; padding: 20px; }
+    legend { padding: 0 8px; font-weight: 700; }
+    .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+    label { display: grid; gap: 6px; font-weight: 600; }
+    input, select { box-sizing: border-box; width: 100%; border: 1px solid #9aa7b2; border-radius: 4px; padding: 9px 10px; font: inherit; }
+    #eventLog { min-height: 48px; margin: 0; padding: 12px; overflow: auto; background: #17202a; color: #d8e2eb; border-radius: 4px; white-space: pre-wrap; }
+    button { width: fit-content; padding: 10px 16px; border: 0; border-radius: 4px; background: #1769aa; color: #fff; font: inherit; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Autofiller Test Form — 4 Passengers (mixed naming conventions)</h1>
+    <p class="intro">Four passengers using different prefixes/separators: <code>pax1_*</code>, <code>traveler_2_*</code>, <code>guest3_*</code>, <code>adult4_*</code>. Each carries a different subset of fields.</p>
+
+    <form id="testForm">
+      <fieldset>
+        <legend>Passenger 1 — pax1</legend>
+        <div class="fields">
+          <label>Full name <input name="pax1_full_name" autocomplete="name" placeholder="Full name"></label>
+          <label>First name <input name="pax1_first_name" autocomplete="given-name" placeholder="First name"></label>
+          <label>Last name <input name="pax1_last_name" autocomplete="family-name" placeholder="Last name"></label>
+          <label>Passport number <input name="pax1_passport_number" placeholder="Passport number"></label>
+          <label>Date of birth <input type="date" name="pax1_date_of_birth" autocomplete="bday"></label>
+          <label>Nationality <select name="pax1_nationality" autocomplete="country-name"><option value="">Choose</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="DE">Germany</option><option value="FR">France</option><option value="CA">Canada</option></select></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Passenger 2 — traveler_2</legend>
+        <div class="fields">
+          <label>Title <select name="traveler_2_title" autocomplete="honorific-prefix"><option value="">—</option><option value="Mr">Mr</option><option value="Mrs">Mrs</option><option value="Ms">Ms</option><option value="Dr">Dr</option></select></label>
+          <label>First name <input name="traveler_2_first_name" autocomplete="given-name" placeholder="First name"></label>
+          <label>Last name <input name="traveler_2_last_name" autocomplete="family-name" placeholder="Last name"></label>
+          <label>Gender <select name="traveler_2_gender" autocomplete="sex"><option value="">—</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select></label>
+          <label>Passport number <input name="traveler_2_passport_number" placeholder="Passport number"></label>
+          <label>Passport issued at <input type="date" name="traveler_2_passport_issued_at"></label>
+          <label>Passport expires at <input type="date" name="traveler_2_passport_expires_at"></label>
+          <label>Issuing country <input name="traveler_2_issuing_country" placeholder="Issuing country"></label>
+          <label>Date of birth <input type="date" name="traveler_2_date_of_birth" autocomplete="bday"></label>
+          <label>Nationality <select name="traveler_2_nationality" autocomplete="country-name"><option value="">Choose</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="DE">Germany</option><option value="FR">France</option><option value="CA">Canada</option></select></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Passenger 3 — guest3</legend>
+        <div class="fields">
+          <label>Full name <input name="guest3_name" autocomplete="name" placeholder="Full name"></label>
+          <label>Gender <select name="guest3_sex" autocomplete="sex"><option value="">—</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select></label>
+          <label>Passport <input name="guest3_passport" placeholder="Passport"></label>
+          <label>DOB <input type="date" name="guest3_dob" autocomplete="bday"></label>
+          <label>Nationality <select name="guest3_nationality" autocomplete="country-name"><option value="">Choose</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="DE">Germany</option><option value="FR">France</option><option value="CA">Canada</option></select></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Passenger 4 — adult4</legend>
+        <div class="fields">
+          <label>First name <input name="adult4_first_name" autocomplete="given-name" placeholder="First name"></label>
+          <label>Middle name <input name="adult4_middle_name" placeholder="Middle name"></label>
+          <label>Last name <input name="adult4_last_name" autocomplete="family-name" placeholder="Last name"></label>
+          <label>Passport number <input name="adult4_passport_number" placeholder="Passport number"></label>
+          <label>Date of birth <input type="date" name="adult4_date_of_birth" autocomplete="bday"></label>
+          <label>Nationality <select name="adult4_nationality" autocomplete="country-name"><option value="">Choose</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="DE">Germany</option><option value="FR">France</option><option value="CA">Canada</option></select></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Contact details</legend>
+        <div class="fields">
+          <label>Phone <input name="phone" type="tel" autocomplete="tel" placeholder="Phone number"></label>
+          <label>Email <input name="email" type="email" autocomplete="email" placeholder="Email address"></label>
+        </div>
+      </fieldset>
+
+      <button type="button" id="showValues">Show current values</button>
+      <pre id="eventLog">Events will appear here when the extension fills a field.</pre>
+    </form>
+  </main>
+
+  <script>
+    const eventLog = document.getElementById('eventLog');
+    const trackedFields = document.querySelectorAll('input, select');
+    trackedFields.forEach((field) => {
+      field.addEventListener('input', () => { eventLog.textContent = `input event: ${field.name || field.id}`; });
+      field.addEventListener('change', () => { eventLog.textContent += `\nchange event: ${field.name || field.id}`; });
+      field.addEventListener('blur', () => { eventLog.textContent += `\nblur event: ${field.name || field.id}`; });
+    });
+    document.getElementById('showValues').addEventListener('click', () => {
+      eventLog.textContent = Array.from(trackedFields).map((f) => `${f.name || f.id}: ${f.value}`).join('\n');
+    });
+  </script>
+</body>
+</html>

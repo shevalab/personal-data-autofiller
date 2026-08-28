@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Personal Data Autofiller Test Form</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: system-ui, sans-serif;
+      background: #f3f6f9;
+      color: #17202a;
+    }
+
+    body {
+      margin: 0;
+      padding: 32px 16px;
+    }
+
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    .intro {
+      color: #52606d;
+    }
+
+    form {
+      display: grid;
+      gap: 20px;
+    }
+
+    fieldset {
+      border: 1px solid #cbd5df;
+      border-radius: 8px;
+      background: white;
+      padding: 20px;
+    }
+
+    legend {
+      padding: 0 8px;
+      font-weight: 700;
+    }
+
+    .fields {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      font-weight: 600;
+    }
+
+    input, select {
+      box-sizing: border-box;
+      width: 100%;
+      border: 1px solid #9aa7b2;
+      border-radius: 4px;
+      padding: 9px 10px;
+      font: inherit;
+    }
+
+    #eventLog {
+      min-height: 48px;
+      margin: 0;
+      padding: 12px;
+      overflow: auto;
+      background: #17202a;
+      color: #d8e2eb;
+      border-radius: 4px;
+      white-space: pre-wrap;
+    }
+
+    button {
+      width: fit-content;
+      padding: 10px 16px;
+      border: 0;
+      border-radius: 4px;
+      background: #1769aa;
+      color: white;
+      font: inherit;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Autofiller Test Form</h1>
+    <p class="intro">Use this page to test one or more saved profiles. The passenger fields are intentionally named like common booking forms.</p>
+
+    <form id="testForm">
+      <fieldset>
+        <legend>Passenger 1</legend>
+        <div class="fields">
+          <label>Title
+            <select name="passenger1_title">
+              <option value="">—</option>
+              <option value="Mr">Mr</option>
+              <option value="Mrs">Mrs</option>
+              <option value="Ms">Ms</option>
+              <option value="Dr">Dr</option>
+            </select>
+          </label>
+          <label>Gender
+            <select name="passenger1_gender">
+              <option value="">—</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </label>
+          <label>Full name
+            <input name="passenger1_full_name" placeholder="Passenger 1 full name">
+          </label>
+          <label>First name
+            <input name="passenger1_first_name" placeholder="First name">
+          </label>
+          <label>Last name
+            <input name="passenger1_last_name" placeholder="Last name">
+          </label>
+          <label>Passport number
+            <input id="passenger1_passport" name="passenger1_passport_number">
+          </label>
+          <label>Passport issued at
+            <input type="date" name="passenger1_passport_issued_at">
+          </label>
+          <label>Passport expires at
+            <input type="date" name="passenger1_passport_expires_at">
+          </label>
+          <label>Date of birth
+            <input type="date" name="passenger1_date_of_birth">
+          </label>
+          <label>Nationality
+            <select name="passenger1_nationality">
+              <option value="">Choose nationality</option>
+              <option value="US">United States</option>
+              <option value="GB">United Kingdom</option>
+              <option value="DE">Germany</option>
+              <option value="FR">France</option>
+              <option value="CA">Canada</option>
+            </select>
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Passenger 2</legend>
+        <div class="fields">
+          <label>Title
+            <select name="passenger2_title">
+              <option value="">—</option>
+              <option value="Mr">Mr</option>
+              <option value="Mrs">Mrs</option>
+              <option value="Ms">Ms</option>
+              <option value="Dr">Dr</option>
+            </select>
+          </label>
+          <label>Gender
+            <select name="passenger2_gender">
+              <option value="">—</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </label>
+          <label>Full name
+            <input name="passenger2_full_name" placeholder="Passenger 2 full name">
+          </label>
+          <label>First name
+            <input name="passenger2_first_name" placeholder="First name">
+          </label>
+          <label>Last name
+            <input name="passenger2_last_name" placeholder="Last name">
+          </label>
+          <label>Passport number
+            <input name="passenger2_passport_number">
+          </label>
+          <label>Passport issued at
+            <input type="date" name="passenger2_passport_issued_at">
+          </label>
+          <label>Passport expires at
+            <input type="date" name="passenger2_passport_expires_at">
+          </label>
+          <label>Date of birth
+            <input type="date" name="passenger2_date_of_birth">
+          </label>
+          <label>Nationality
+            <select name="passenger2_nationality">
+              <option value="">Choose nationality</option>
+              <option value="US">United States</option>
+              <option value="GB">United Kingdom</option>
+              <option value="DE">Germany</option>
+              <option value="FR">France</option>
+              <option value="CA">Canada</option>
+            </select>
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Contact details</legend>
+        <div class="fields">
+          <label>Phone
+            <input name="phone" type="tel" placeholder="Phone number">
+          </label>
+          <label>Email
+            <input name="email" type="email" placeholder="Email address">
+          </label>
+        </div>
+      </fieldset>
+
+      <button type="button" id="showValues">Show current values</button>
+      <pre id="eventLog">Events will appear here when the extension fills a field.</pre>
+    </form>
+  </main>
+
+  <script>
+    const eventLog = document.getElementById('eventLog');
+    const trackedFields = document.querySelectorAll('input, select');
+
+    trackedFields.forEach((field) => {
+      field.addEventListener('input', () => {
+        eventLog.textContent = `input event: ${field.name || field.id}`;
+      });
+      field.addEventListener('change', () => {
+        eventLog.textContent += `\nchange event: ${field.name || field.id}`;
+      });
+      field.addEventListener('blur', () => {
+        eventLog.textContent += `\nblur event: ${field.name || field.id}`;
+      });
+    });
+
+    document.getElementById('showValues').addEventListener('click', () => {
+      const values = Array.from(trackedFields).map((field) => `${field.name || field.id}: ${field.value}`);
+      eventLog.textContent = values.join('\n');
+    });
+  </script>
+</body>
+</html>

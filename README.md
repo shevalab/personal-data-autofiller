@@ -1,0 +1,103 @@
+# Personal Data Autofiller – Browser Extension
+
+A Chrome / Chromium / Edge (Manifest V3) extension that lets you save personal profiles (full name, title, gender, passport/ID number, passport issuing country, passport issue and expiration dates, date of birth, phone, email, nationality) and quickly fill them into web forms — especially useful when buying flight tickets for several passengers.
+
+## Features
+
+- Save multiple people with common travel-related fields (including passport issuing country)
+- Edit or delete saved people individually
+- Select one or more people and autofill the current page
+- Heuristic field detection that works on many airline and booking sites
+- Field matching uses `name`, `id`, `placeholder`, `aria-label`, `data-testid`, the `autocomplete` attribute, associated `<label>` text, and a large keyword list
+- Robust multi-passenger support: detects 0-based and 1-based numbering, `passenger1_*` / `pax2_*` / `traveler_2_*` prefixes, and camelCase/bracket forms like `travelers[0].firstName`
+- Automatic first/last-name splitting from the stored full name
+- Local storage only (data never leaves your browser)
+- Compact, two-column popup UI
+
+## Installation (Developer / Unpacked)
+
+1. Unzip this package if you received a ZIP file.
+2. Open Chrome (or Edge / Brave / other Chromium browser).
+3. Go to `chrome://extensions/` (or `edge://extensions/`).
+4. Enable **Developer mode** (toggle in the top-right).
+5. Click **Load unpacked**.
+6. Select the folder that contains `manifest.json` (the `personal-data-autofiller` folder).
+7. The extension icon (blue “P”) should appear in the toolbar.
+
+## How to Use
+
+1. Click the extension icon.
+2. Under **Add Person**, fill in the fields and click **Add Person**.
+3. Repeat for every passenger / traveler you need.
+4. In **Saved People**, click **Edit** to change a person's details, then click **Update Person**.
+5. Open the booking / form page in a normal tab.
+6. Click the extension icon again.
+7. In **Autofill Form**, select the people (Ctrl/Cmd + click for multiple).  
+   The order you select them usually corresponds to passenger 1, passenger 2, …
+8. Click **Autofill Selected People**.
+9. A green toast appears on the page confirming how many fields were filled.
+
+## Tips for Best Results
+
+- Many airline sites use numbered fields (`passenger1_name`, `traveler_2_passport`, etc.). The extension looks for these patterns.
+- If a site uses first-name + last-name fields, the extension tries to split the full name automatically.
+- After filling, always double-check the form — especially date formats and country dropdowns.
+- Some sites protect fields with heavy JavaScript frameworks; if a field does not update, try clicking into it first or filling manually.
+
+## Testing Locally
+
+1. Load the extension as an unpacked extension using the installation steps above.
+2. From this project directory, start a local web server:
+
+   ```sh
+   python3 -m http.server 8000
+   ```
+
+3. Open one of the bundled test forms in a normal tab:
+
+   - `http://localhost:8000/test-form-1p.html` — single passenger (full + first/last split, `autocomplete` attributes)
+   - `http://localhost:8000/test-form-2p.html` — two 1-based passengers (`passenger1_*` / `passenger2_*`)
+   - `http://localhost:8000/test-form-3p.html` — three 0-based passengers in camelCase/bracket form (`travelers[0].firstName`)
+   - `http://localhost:8000/test-form-4p.html` — four passengers with mixed prefixes (`pax1_*`, `traveler_2_*`, `guest3_*`, `adult4_*`)
+
+4. Open the extension popup and add people with different values, including passport issue and expiration dates, a passport issuing country, and a two-letter nationality code such as `US` or `GB`.
+5. Select one person and click **Autofill Form**. Check the passenger fields, the shared phone/email fields, the passport number, passport issuing country, passport issue and expiration dates, the date of birth, and the nationality dropdown.
+6. Add a second (or more) person, assign them to the extra passenger slots, and autofill again. Each passenger section should receive its own data, and first/last-name fields should contain the split parts of that person's full name.
+7. Click **Show current values** to print every field value. The event log should also show `input`, `change`, and `blur` events while filling.
+
+After changing extension code, click **Reload** on its card at `chrome://extensions/`, refresh the test page, and repeat the check.
+
+## Data & Privacy
+
+- All profiles are stored only in `chrome.storage.local` on your device.
+- Nothing is sent to any server.
+- You can delete individual people or clear everything from the popup.
+
+## Limitations
+
+- Field detection is heuristic. Highly customized or heavily obfuscated forms may need manual adjustment of the code.
+- Works best on regular `https://` pages. Some internal or restricted pages may block script injection.
+- Not tested on every airline. You may need to inspect the page (F12) and improve the selectors in `popup.js` → `autofillForm` function for specific sites.
+
+## File Structure
+
+```
+personal-data-autofiller/
+├── manifest.json
+├── popup.html
+├── popup.js
+├── content.js
+├── icons/
+│   ├── icon16.png
+│   ├── icon48.png
+│   └── icon128.png
+└── README.md
+```
+
+## Customizing for a Specific Site
+
+Open `popup.js` and locate the `autofillForm` function. You can add more keywords to the `patterns` object or write site-specific logic (check `window.location.hostname`).
+
+## License
+
+Free to use and modify for personal purposes.
