@@ -561,4 +561,78 @@ test('a suppressible bucket is added back by a later positive patternRe rule', (
   assert.ok(buckets.includes('passportIssuedAt'), 'final bucket state keeps passportIssuedAt');
 });
 
+// ---------------------------------------------------------------------------
+// Extended keyword coverage: additional real-world field-name variants.
+// Each must resolve to exactly one bucket (no cross-bucket collisions).
+// ---------------------------------------------------------------------------
+function nameClassOne(name, autocomplete) {
+  const buckets = classify(name, autocomplete);
+  return buckets;
+}
+
+test('extended full name keywords map to fullName only', () => {
+  for (const k of ['passenger full name', 'guest_name', 'applicant name', 'pax_name']) {
+    assert.deepEqual(nameClassOne(k), ['fullName'], `${k} should be fullName only`);
+  }
+});
+
+test('extra given-name keywords map to firstName only (incl. "christian name")', () => {
+  for (const k of ['christian name', 'given_name_2', 'first name 2', 'forename 2']) {
+    assert.deepEqual(nameClassOne(k), ['firstName'], `${k} should be firstName only`);
+  }
+});
+
+test('extra family-name keywords map to lastName only (incl. "father/mother name")', () => {
+  for (const k of ['father name', 'mother name', 'second surname', 'last_name_2']) {
+    assert.deepEqual(nameClassOne(k), ['lastName'], `${k} should be lastName only`);
+  }
+});
+
+test('extra document-number keywords map to passport only', () => {
+  for (const k of ['doc no', 'docno']) {
+    assert.deepEqual(nameClassOne(k), ['passport'], `${k} should be passport only`);
+  }
+});
+
+test('extra issue-date keywords map to passportIssuedAt only', () => {
+  for (const k of ['date of issuance', 'passport issued date', 'document issue date', 'doc issue date']) {
+    assert.deepEqual(nameClassOne(k), ['passportIssuedAt'], `${k} should be passportIssuedAt only`);
+  }
+});
+
+test('extra expiry keywords map to passportExpiresAt only', () => {
+  assert.deepEqual(nameClassOne('valid through'), ['passportExpiresAt']);
+});
+
+test('extra issuing-country keywords map to passportIssuedCountry only (incl. "place of issue")', () => {
+  for (const k of ['issuing authority', 'place of issue']) {
+    assert.deepEqual(nameClassOne(k), ['passportIssuedCountry'], `${k} should be passportIssuedCountry only`);
+  }
+});
+
+test('extra DOB keywords map to dob only', () => {
+  for (const k of ['birth month', 'birth year', 'birth date 2', 'date of birth 2']) {
+    assert.deepEqual(nameClassOne(k), ['dob'], `${k} should be dob only`);
+  }
+});
+
+test('extra phone keywords map to phone only', () => {
+  for (const k of ['contact number', 'phone 2']) {
+    assert.deepEqual(nameClassOne(k), ['phone'], `${k} should be phone only`);
+  }
+});
+
+test('extra email keywords map to email only', () => {
+  for (const k of ['correspondence email', 'primary email', 'secondary email', 'email 2']) {
+    assert.deepEqual(nameClassOne(k), ['email'], `${k} should be email only`);
+  }
+});
+
+test('extra nationality keywords map to nationality only', () => {
+  for (const k of ['nationality 2', 'citizenship 2']) {
+    assert.deepEqual(nameClassOne(k), ['nationality'], `${k} should be nationality only`);
+  }
+});
+
+
 

@@ -17,6 +17,14 @@ full name
 passengername
 passenger_name
 passenger-name
+passengerfullname
+passenger_full_name
+guestname
+guest_name
+applicantname
+applicant_name
+paxname
+pax_name
 travelername
 traveler_name
 travellername
@@ -51,9 +59,16 @@ given_name
 given-name
 given names
 givenname(s)
+givenname2
+given_name_2
+firstname2
+first_name_2
 forename
 forenames
+forename2
 prenom
+christianname
+christian_name
 ```
 
 **HTML autocomplete:** `given-name`
@@ -100,6 +115,14 @@ family name
 s-name
 secondname
 second_name
+secondsurname
+second_surname
+fathername
+father_name
+mothername
+mother_name
+lastname2
+last_name_2
 ```
 
 **HTML autocomplete:** `family-name`
@@ -150,6 +173,8 @@ document_number
 document-number
 docnumber
 doc_number
+docno
+doc_no
 documentno
 document_no
 traveldocumentnumber
@@ -176,8 +201,12 @@ issue_date
 issue-date
 dateofissue
 date_of_issue
+dateofissuance
+date_of_issuance
 passportissuedate
 passport_issue_date
+passportissueddate
+passport_issued_date
 passportissue
 issued on
 dateissued
@@ -185,6 +214,9 @@ date_issued
 issued
 issuedat
 issue
+docissuedate
+documentissuedate
+document_issue_date
 ```
 
 ---
@@ -211,6 +243,8 @@ validuntil
 valid_until
 validto
 valid_to
+validthrough
+valid_through
 documentexpiry
 document_expiry
 ```
@@ -233,6 +267,13 @@ birthday
 birth_day
 birth-day
 bday
+birthmonth
+birth_month
+birthyear
+birth_year
+birthdate2
+birth_date_2
+dateofbirth2
 passengerdob
 passenger_dob
 travelerdob
@@ -273,6 +314,11 @@ citizenshipcountry
 countryofnationality
 passportnationality
 nationality country
+country of citizenship
+nationality2
+nationality_2
+citizenship2
+citizenship_2
 ```
 
 ---
@@ -282,15 +328,22 @@ nationality country
 ```
 issuingcountry
 issuing_country
+issuing country
 countryofissue
 country_of_issue
 issuecountry
 issue_country
 passportcountry
 passport_country
+passportissuedcountry
+passport_issued_country
 countryofissuance
 documentcountry
 issuingstate
+issuingauthority
+issuing_authority
+placeofissue
+place_of_issue
 ```
 
 **Related Chromium types:** `PASSPORT_ISSUING_COUNTRY`
@@ -312,6 +365,8 @@ phone-number
 tel
 contactphone
 contact_phone
+contactnumber
+contact_number
 mobilephone
 mobile_phone
 daytimephone
@@ -319,6 +374,10 @@ homephone
 workphone
 businessphone
 eveningphone
+primarycontact
+phone2
+phone_2
+telephone2
 ```
 
 **HTML autocomplete:** `tel`, `tel-national`, `tel-country-code`, `tel-area-code`, `tel-local`, `mobile tel`, `home tel`, `work tel`
@@ -337,6 +396,15 @@ mail
 contactemail
 contact_email
 e_mail
+correspondenceemail
+correspondence_email
+primaryemail
+primary_email
+secondaryemail
+secondary_email
+email2
+email_2
+contactemail2
 ```
 
 **HTML autocomplete:** `email`

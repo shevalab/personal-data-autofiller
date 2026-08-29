@@ -48,17 +48,23 @@
         'traveler_name', 'traveler-name', 'travellername', 'traveller_name',
         'traveller-name', 'passportname', 'passport_name', 'passport-name',
         'nameonpassport', 'legalname', 'legal_name', 'completename',
-        'yourname', 'your_name'
+        'yourname', 'your_name', 'passengerfullname', 'passenger_full_name',
+        'guestname', 'guest_name', 'applicantname', 'applicant_name',
+        'paxname', 'pax_name'
       ],
       firstName: [
         'firstname', 'first_name', 'first-name', 'first name', 'fname',
         'f-name', 'firstn', 'givenname', 'given_name', 'given-name',
-        'given names', 'givenname(s)', 'forename', 'forenames', 'prenom'
+        'given names', 'givenname(s)', 'forename', 'forenames', 'prenom',
+        'christianname', 'christian_name', 'givenname2', 'given_name_2',
+        'firstname2', 'first_name_2', 'forename2'
       ],
       lastName: [
         'lastname', 'last_name', 'last-name', 'last name', 'lname', 'l-name',
         'lastn', 'surname', 'familyname', 'family_name', 'family-name',
-        'family name', 's-name', 'secondname', 'second_name'
+        'family name', 's-name', 'secondname', 'second_name', 'fathername',
+        'father_name', 'mothername', 'mother_name', 'secondsurname',
+        'second_surname', 'lastname2', 'last_name_2'
       ],
       middleName: [
         'middlename', 'middle_name', 'middle-name', 'middle name', 'mname',
@@ -73,13 +79,16 @@
         'document-number', 'docnumber', 'doc_number', 'documentno',
         'document_no', 'traveldocumentnumber', 'travel document number',
         'idnumber', 'id_number', 'id-number', 'identitynumber',
-        'identity_number', 'docnum', 'documentid', 'document_id'
+        'identity_number', 'docnum', 'documentid', 'document_id',
+        'docno', 'doc_no'
       ],
       passportIssuedAt: [
         'issuedate', 'issue_date', 'issue-date', 'dateofissue',
         'date_of_issue', 'passportissuedate', 'passport_issue_date',
         'passportissue', 'issued on', 'dateissued', 'date_issued',
-        'issued', 'issuedat', 'issue'
+        'issued', 'issuedat', 'issue', 'dateofissuance', 'date_of_issuance',
+        'passportissueddate', 'passport_issued_date', 'docissuedate',
+        'documentissuedate', 'document_issue_date'
       ],
       passportExpiresAt: [
         'expiry', 'expirydate', 'expiry_date', 'expiry-date', 'expiration',
@@ -87,7 +96,7 @@
         'expire_date', 'expires', 'passportexpiry', 'passport_expiry',
         'passportexpiration', 'passport_expiration', 'validuntil',
         'valid_until', 'validto', 'valid_to', 'documentexpiry',
-        'document_expiry'
+        'document_expiry', 'validthrough', 'valid_through'
       ],
       passportIssuedCountry: [
         'issuingcountry', 'issuing_country', 'issuing country',
@@ -95,30 +104,37 @@
         'issuecountry', 'issue_country', 'passportcountry',
         'passport_country', 'passportissuedcountry', 'passport_issued_country',
         'passport issuing country', 'countryofissuance', 'documentcountry',
-        'issuingstate'
+        'issuingstate', 'issuingauthority', 'issuing_authority',
+        'placeofissue', 'place_of_issue'
       ],
       dob: [
         'dob', 'dateofbirth', 'date_of_birth', 'date-of-birth', 'birthdate',
         'birth_date', 'birth-date', 'birthday', 'birth_day', 'birth-day',
         'bday', 'passengerdob', 'passenger_dob', 'travelerdob',
-        'date born', 'born'
+        'date born', 'born', 'birthmonth', 'birth_month', 'birthyear',
+        'birth_year', 'birthdate2', 'birth_date_2', 'dateofbirth2'
       ],
       phone: [
         'phone', 'telephone', 'mobile', 'cellphone', 'cell_phone',
         'cell-phone', 'phonenumber', 'phone_number', 'phone-number', 'tel',
         'contactphone', 'contact_phone', 'mobilephone', 'mobile_phone',
         'daytimephone', 'homephone', 'workphone', 'businessphone',
-        'eveningphone'
+        'eveningphone', 'contactnumber', 'contact_number', 'primarycontact',
+        'phone2', 'phone_2', 'telephone2'
       ],
       email: [
         'email', 'e-mail', 'emailaddress', 'email_address', 'email-address',
-        'mail', 'contactemail', 'contact_email', 'e_mail'
+        'mail', 'contactemail', 'contact_email', 'e_mail',
+        'correspondenceemail', 'correspondence_email', 'primaryemail',
+        'primary_email', 'secondaryemail', 'secondary_email', 'email2',
+        'email_2', 'contactemail2'
       ],
       nationality: [
         'nationality', 'citizenship', 'countryofcitizenship',
         'country_of_citizenship', 'nationalitycode', 'citizen',
         'citizenshipcountry', 'countryofnationality', 'passportnationality',
-        'nationality country', 'country of citizenship'
+        'nationality country', 'country of citizenship', 'nationality2',
+        'nationality_2', 'citizenship2', 'citizenship_2'
       ]
     };
 
@@ -139,7 +155,7 @@
         { re: /passport\s*(?:issued|issue|expir|expiration|valid|country|nationality)/i, remove: 'passport' }
       ],
       passportIssuedAt: [
-        { re: /\b(?:issuing|issue|issued)\s*(?:country|nationality)|\bcountry\s+(?:of\s+)?issue\b|issuecountry/i, remove: 'passportIssuedAt' }
+        { re: /\b(?:issuing|issue|issued)\s*(?:country|nationality)|\bcountry\s+(?:of\s+)?issue\b|issuecountry|\bplace\s+of\s+issue\b/i, remove: 'passportIssuedAt' }
       ],
       fullName: [
         { re: /\b(?:company|airline|cardholder|customer|organization|organisation|business|agency|employer|institution|bank|school|website|domain|account|file|brand)\s+name\b/i, remove: 'fullName' }
