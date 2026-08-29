@@ -24,6 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const exportButton = document.getElementById('exportData');
   const importButton = document.getElementById('importData');
   const dataStatus = document.getElementById('dataStatus');
+  const toggleAddPerson = document.getElementById('toggleAddPerson');
+  const addPersonBody = document.getElementById('addPersonBody');
   let editingIndex = null;
   let slotProfiles = [];
   let profilesCache = [];
@@ -370,4 +372,18 @@ document.addEventListener('DOMContentLoaded', () => {
   importFileInput.addEventListener('change', () => {
     importData();
   });
+
+  function setAddPersonCollapsed(collapsed) {
+    addPersonBody.hidden = collapsed;
+    toggleAddPerson.innerHTML = collapsed ? '&#9656;' : '&#9662;';
+    toggleAddPerson.title = collapsed ? 'Show Add Person' : 'Hide Add Person';
+    toggleAddPerson.setAttribute('aria-expanded', String(!collapsed));
+    chrome.storage.local.set({ addPersonCollapsed: collapsed });
+  }
+
+  toggleAddPerson.addEventListener('click', () => {
+    setAddPersonCollapsed(!addPersonBody.hidden);
+  });
+
+  setAddPersonCollapsed(true);
 });

@@ -302,6 +302,39 @@
     .menu button:active {
       transform: none;
     }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .section-header h2 {
+      margin: 0;
+    }
+    .collapse-btn {
+      background: none;
+      border: none;
+      width: 26px;
+      height: 26px;
+      padding: 0;
+      margin: 0;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #6c757d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      line-height: 1;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+    .collapse-btn:hover {
+      background: #e9ecef;
+      color: #212529;
+    }
+    .collapse-btn:active {
+      transform: none;
+    }
   </style>
 </head>
 <body>
@@ -319,7 +352,11 @@
   <div id="dataStatus" class="status"></div>
 
   <div class="section">
-    <h2>Add Person</h2>
+    <div class="section-header">
+      <h2>Add Person</h2>
+      <button id="toggleAddPerson" class="collapse-btn" title="Hide/Show Add Person" aria-expanded="true">&#9662;</button>
+    </div>
+    <div id="addPersonBody">
     <div class="grid2">
       <div class="f span2">
         <label for="fullName">Full Name</label>
@@ -382,6 +419,7 @@
       <button id="cancelEdit" class="btn-secondary" hidden>Cancel Edit</button>
     </div>
     <div id="addStatus" class="status"></div>
+    </div>
   </div>
 
   <div class="section">
