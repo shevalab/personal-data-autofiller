@@ -182,6 +182,9 @@ passportissue
 issued on
 dateissued
 date_issued
+issued
+issuedat
+issue
 ```
 
 ---
