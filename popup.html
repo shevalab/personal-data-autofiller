@@ -190,14 +190,16 @@
       margin-bottom: 8px;
     }
     .slot-row .slot-label {
-      flex-shrink: 0;
-      width: 74px;
+      flex: none;
+      width: 24px;
       font-size: 12px;
       font-weight: 600;
       color: #495057;
     }
     .slot-row select {
-      flex: 1;
+      flex: 1 1 auto;
+      min-width: 0;
+      width: 100%;
       margin-bottom: 0;
     }
     .slot-row .btn-remove {

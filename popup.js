@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const label = document.createElement('span');
       label.className = 'slot-label';
-      label.textContent = 'Passenger ' + (slotIdx + 1);
+      label.textContent = (slotIdx + 1);
 
       const select = document.createElement('select');
       const placeholder = document.createElement('option');
