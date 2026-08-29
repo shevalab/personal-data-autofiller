@@ -105,7 +105,7 @@
     const notice = document.createElement('div');
     notice.textContent = `Personal Data Autofiller: filled ${filledCount} field(s) for ${profiles.length} person(s)`;
     notice.style.cssText = `
-      position: fixed; top: 16px; right: 16px; z-index: 2147483647;
+      position: fixed; top: 16px; left: 16px; z-index: 2147483647;
       background: #198754; color: white; padding: 12px 18px; border-radius: 8px;
       font-family: system-ui, sans-serif; font-size: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.25);
       transition: opacity 0.4s;

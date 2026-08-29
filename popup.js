@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     passportIssuedCountryInput.value = profile.passportIssuedCountry || '';
     addButton.textContent = 'Update Person';
     cancelEditButton.hidden = false;
+    setAddPersonCollapsed(false);
     fullNameInput.focus();
   }
 
@@ -76,6 +77,10 @@ document.addEventListener('DOMContentLoaded', () => {
       el.className = 'status';
       el.textContent = '';
     }, 3000);
+  }
+
+  function persistSlots() {
+    chrome.storage.local.set({ slotProfiles });
   }
 
   function rebuildSlotSelects() {
@@ -105,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       select.addEventListener('change', () => {
         slotProfiles[slotIdx] = select.value === '' ? null : parseInt(select.value, 10);
+        persistSlots();
       });
 
       const removeBtn = document.createElement('button');
@@ -114,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
       removeBtn.addEventListener('click', () => {
         slotProfiles.splice(slotIdx, 1);
         rebuildSlotSelects();
+        persistSlots();
       });
 
       row.appendChild(label);
@@ -126,11 +133,13 @@ document.addEventListener('DOMContentLoaded', () => {
   addSlotButton.addEventListener('click', () => {
     slotProfiles.push(null);
     rebuildSlotSelects();
+    persistSlots();
   });
 
   function loadProfiles() {
-    chrome.storage.local.get('profiles', (data) => {
+    chrome.storage.local.get(['profiles', 'slotProfiles'], (data) => {
       const profiles = data.profiles || [];
+      slotProfiles = (data.slotProfiles || []).filter(idx => idx === null || idx < profiles.length);
       profilesCache = profiles;
       profilesList.innerHTML = '';
 
@@ -194,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (idx > index) return idx - 1;
         return idx;
       });
-      chrome.storage.local.set({ profiles }, loadProfiles);
+      chrome.storage.local.set({ profiles, slotProfiles }, loadProfiles);
     });
   }
 
@@ -247,7 +256,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   clearAllButton.addEventListener('click', () => {
     if (confirm('Delete all saved people? This cannot be undone.')) {
-      chrome.storage.local.set({ profiles: [] }, () => {
+      slotProfiles = [];
+      chrome.storage.local.set({ profiles: [], slotProfiles }, () => {
         loadProfiles();
         showStatus(fillStatus, 'All data cleared.', 'success');
       });
