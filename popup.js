@@ -19,6 +19,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const clearAllButton = document.getElementById('clearAll');
   const addStatus = document.getElementById('addStatus');
   const fillStatus = document.getElementById('fillStatus');
+  const menuButton = document.getElementById('menuButton');
+  const menu = document.getElementById('menu');
+  const exportButton = document.getElementById('exportData');
+  const importButton = document.getElementById('importData');
+  const dataStatus = document.getElementById('dataStatus');
   let editingIndex = null;
   let slotProfiles = [];
   let profilesCache = [];
@@ -282,4 +287,87 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   loadProfiles();
+
+  menuButton.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menu.classList.toggle('open');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!menu.contains(e.target) && e.target !== menuButton) {
+      menu.classList.remove('open');
+    }
+  });
+
+  const importFileInput = document.getElementById('importFile');
+
+  async function readProfiles() {
+    const data = await chrome.storage.local.get('profiles');
+    return data.profiles || [];
+  }
+
+  async function exportData() {
+    try {
+      const profiles = await readProfiles();
+      const blob = new Blob([JSON.stringify(profiles, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'personal-data.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+      showStatus(dataStatus, 'Data exported successfully.', 'success');
+    } catch (err) {
+      console.error(err);
+      showStatus(dataStatus, 'Export failed.', 'error');
+    }
+  }
+
+  async function importData() {
+    try {
+      const file = importFileInput.files && importFileInput.files[0];
+      if (!file) {
+        showStatus(dataStatus, 'No file selected.', 'error');
+        return;
+      }
+      const text = await file.text();
+      let imported;
+      try {
+        imported = JSON.parse(text);
+      } catch (parseErr) {
+        showStatus(dataStatus, 'File is not valid JSON.', 'error');
+        return;
+      }
+      if (!Array.isArray(imported)) {
+        showStatus(dataStatus, 'File must contain a JSON array of people.', 'error');
+        return;
+      }
+      const profiles = await readProfiles();
+      profiles.push(...imported);
+      chrome.storage.local.set({ profiles }, () => {
+        loadProfiles();
+        showStatus(dataStatus, `Imported ${imported.length} person(s).`, 'success');
+      });
+    } catch (err) {
+      console.error(err);
+      showStatus(dataStatus, 'Import failed.', 'error');
+    }
+  }
+
+  exportButton.addEventListener('click', () => {
+    menu.classList.remove('open');
+    exportData();
+  });
+
+  importButton.addEventListener('click', () => {
+    menu.classList.remove('open');
+    importFileInput.value = '';
+    importFileInput.click();
+  });
+
+  importFileInput.addEventListener('change', () => {
+    importData();
+  });
 });
