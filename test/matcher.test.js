@@ -451,3 +451,67 @@ test('country-name autocomplete maps to nationality and never to fullName', () =
   assert.ok(buckets.includes('nationality'));
   assert.ok(!buckets.includes('fullName'));
 });
+
+// ---------------------------------------------------------------------------
+// Regression: passport sub-fields must not be claimed by the passport-number
+// bucket, and the issue-date vs issuing-country ambiguity must resolve to the
+// country intent. (See "passport_issued_at before passport_number" ordering bug.)
+// ---------------------------------------------------------------------------
+test('passport issue/expiry/country fields do NOT classify as the passport number bucket', () => {
+  for (const k of ['passport_issued_at', 'passport_expires_at', 'passport_country', 'passport_issued_country', 'passport_expiry']) {
+    const buckets = nameClass(k);
+    assert.ok(!buckets.includes('passport'), `${k} should NOT classify as passport (got ${buckets})`);
+  }
+});
+
+test('passport_issued_at / passport_expires_at classify to their own buckets', () => {
+  const issued = nameClass('passport_issued_at');
+  assert.ok(issued.includes('passportIssuedAt'));
+  const expires = nameClass('passport_expires_at');
+  assert.ok(expires.includes('passportExpiresAt'));
+});
+
+test('bare "passport" and explicit passport number forms still match', () => {
+  assert.ok(nameClass('guest3_passport').includes('passport'));
+  assert.ok(nameClass('passport_number').includes('passport'));
+  assert.ok(nameClass('passportNumber').includes('passport'));
+});
+
+test('assignFields keeps passport number/issue/expiry in separate buckets regardless of DOM order', () => {
+  // issue date appears BEFORE the number field, which previously misrouted the
+  // number into the date input and skipped the real passport field.
+  const fields = [
+    { attrs: 'passenger1_passport_issued_at' },
+    { attrs: 'passenger1_passport_number' },
+    { attrs: 'passenger1_passport_expires_at' }
+  ];
+  const { assignments } = assignFields(fields, 1);
+  assert.deepEqual(assignments[0].passport, [1]);
+  assert.deepEqual(assignments[0].passportIssuedAt, [0]);
+  assert.deepEqual(assignments[0].passportExpiresAt, [2]);
+});
+
+test('country_of_issue / issuecountry classify as issuing country, not issue date', () => {
+  for (const k of ['country_of_issue', 'issuecountry', 'issuing_country', 'passport_issued_country']) {
+    const buckets = nameClass(k);
+    assert.ok(buckets.includes('passportIssuedCountry'), `${k} should classify as passportIssuedCountry (got ${buckets})`);
+    assert.ok(!buckets.includes('passportIssuedAt'), `${k} should NOT classify as passportIssuedAt (got ${buckets})`);
+  }
+});
+
+test('pure issue-date keywords still classify as passportIssuedAt', () => {
+  for (const k of ['issue_date', 'dateissued', 'passportissuedate', 'passport_issued_at']) {
+    const buckets = nameClass(k);
+    assert.ok(buckets.includes('passportIssuedAt'), `${k} should classify as passportIssuedAt (got ${buckets})`);
+  }
+});
+
+test('non-person "name" fields do NOT classify as fullName', () => {
+  for (const k of ['company_name', 'airline_name', 'cardholder_name', 'customer_name', 'organization_name', 'bank_name']) {
+    const buckets = nameClass(k);
+    assert.ok(!buckets.includes('fullName'), `${k} should NOT classify as fullName (got ${buckets})`);
+  }
+  assert.ok(nameClass('full name').includes('fullName'));
+  assert.ok(nameClass('passenger name').includes('fullName'));
+});
+

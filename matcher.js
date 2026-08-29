@@ -93,7 +93,8 @@
         'issuingcountry', 'issuing_country', 'issuing country',
         'countryofissue', 'country_of_issue', 'country of issue',
         'issuecountry', 'issue_country', 'passportcountry',
-        'passport_country', 'countryofissuance', 'documentcountry',
+        'passport_country', 'passportissuedcountry', 'passport_issued_country',
+        'passport issuing country', 'countryofissuance', 'documentcountry',
         'issuingstate'
       ],
       dob: [
@@ -1001,6 +1002,46 @@
       if (buckets.indexOf('fullName') !== -1 &&
           fullNameSuppressors.some(function (b) { return buckets.indexOf(b) !== -1; })) {
         buckets.splice(buckets.indexOf('fullName'), 1);
+      }
+
+      // A bare "name" token also matches non-person fields ("company_name",
+      // "airline_name", "cardholder_name", ...). If such a qualifier token is
+      // present, drop the fullName bucket so we don't write a full name into
+      // an organization / corporate field.
+      if (buckets.indexOf('fullName') !== -1) {
+        var nameBlockers = [
+          'company', 'organization', 'organisation', 'business', 'agency',
+          'airline', 'cardholder', 'customer', 'employer', 'institution',
+          'bank', 'school', 'website', 'domain', 'account', 'file', 'brand'
+        ];
+        var blocked = nameBlockers.some(function (b) {
+          return matchesAny(attrs, [b]);
+        });
+        if (blocked) {
+          buckets.splice(buckets.indexOf('fullName'), 1);
+        }
+      }
+
+      // Disambiguate "issue date" vs "issuing country". "country_of_issue",
+      // "issuecountry", "issuing_country" contain both an "issue"-ish token and
+      // a country token; the country token is the more specific intent, so it
+      // must not also be claimed by the issue-date bucket (which would fill a
+      // date field with a country, or vice-versa).
+      var issuedAtSuppressors = ['nationality', 'passportIssuedCountry'];
+      if (buckets.indexOf('passportIssuedAt') !== -1 &&
+          issuedAtSuppressors.some(function (b) { return buckets.indexOf(b) !== -1; })) {
+        buckets.splice(buckets.indexOf('passportIssuedAt'), 1);
+      }
+
+      // A "passport" field that is actually one of the passport sub-fields
+      // (issue date, expiry date, issuing country) has "passport" as a prefix
+      // and would otherwise be claimed by the number bucket. The more specific
+      // sub-bucket wins; drop the generic `passport` claim so the number is
+      // not written into a date/country input (and vice-versa).
+      var passportSubBuckets = ['passportIssuedAt', 'passportExpiresAt', 'passportIssuedCountry'];
+      if (buckets.indexOf('passport') !== -1 &&
+          passportSubBuckets.some(function (b) { return buckets.indexOf(b) !== -1; })) {
+        buckets.splice(buckets.indexOf('passport'), 1);
       }
 
       return buckets;

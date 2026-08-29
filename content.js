@@ -34,15 +34,29 @@
   function setValue(el, value) {
     if (!el || value === undefined || value === null || value === '') return false;
 
+    let didWrite = false;
+
     if (el.tagName === 'SELECT') {
       const opts = Array.from(el.options, (o) => ({ text: o.text, value: o.value }));
       const matched = matcher.matchSelectOption(opts, value);
-      if (matched !== null) el.value = matched;
+      if (matched !== null) {
+        el.value = matched;
+        didWrite = true;
+      }
     } else if (el.type === 'date' && value) {
-      el.value = value;
+      // Only accept values that are valid dates for a <input type="date">;
+      // an arbitrary string (e.g. a passport number) would silently clear it.
+      const d = new Date(value);
+      if (!Number.isNaN(d.getTime())) {
+        el.value = value;
+        didWrite = true;
+      }
     } else {
       el.value = value;
+      didWrite = true;
     }
+
+    if (!didWrite) return false;
 
     el.dispatchEvent(new Event('input', { bubbles: true }));
     el.dispatchEvent(new Event('change', { bubbles: true }));
