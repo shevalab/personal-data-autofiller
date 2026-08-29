@@ -937,6 +937,70 @@
       'zw': 'zw',
     };
 
+    // ISO 3166-1 alpha-2 code -> ITU-T E.164 country calling code. Backs
+    // phone splitting & matching for "country-code selector + national number"
+    // forms. Keyed by lowercase ISO code so it composes with `countryAliases`.
+    // Includes the codes covered by `countryAliases` plus common travel ones.
+    var countryDialCode = {
+      'ad': '376', 'ae': '971', 'af': '93', 'ag': '1', 'ai': '1', 'al': '355',
+      'am': '374', 'ao': '244', 'aq': '672', 'ar': '54', 'as': '1', 'at': '43',
+      'au': '61', 'aw': '297', 'ax': '358', 'az': '994', 'ba': '387',
+      'bb': '1', 'bd': '880', 'be': '32', 'bf': '226', 'bg': '359', 'bh': '973',
+      'bi': '257', 'bj': '229', 'bl': '590', 'bm': '1', 'bn': '673', 'bo': '591',
+      'bq': '599', 'br': '55', 'bs': '1', 'bt': '975', 'bv': '47', 'bw': '267',
+      'by': '375', 'bz': '501', 'ca': '1', 'cc': '61', 'cd': '243', 'cf': '236',
+      'cg': '242', 'ch': '41', 'ci': '225', 'ck': '682', 'cl': '56', 'cm': '237',
+      'cn': '86', 'co': '57', 'cr': '506', 'cu': '53', 'cv': '238', 'cw': '599',
+      'cx': '61', 'cy': '357', 'cz': '420', 'de': '49', 'dj': '253', 'dk': '45',
+      'dm': '1', 'do': '1', 'dz': '213', 'ec': '593', 'ee': '372', 'eg': '20',
+      'eh': '212', 'er': '291', 'es': '34', 'et': '251', 'fi': '358', 'fj': '679',
+      'fk': '500', 'fm': '691', 'fo': '298', 'fr': '33', 'ga': '241', 'gb': '44',
+      'gd': '1', 'ge': '995', 'gf': '594', 'gg': '44', 'gh': '233', 'gi': '350',
+      'gl': '299', 'gm': '220', 'gn': '224', 'gp': '590', 'gq': '240', 'gr': '30',
+      'gs': '500', 'gt': '502', 'gu': '1', 'gw': '245', 'gy': '592', 'hk': '852',
+      'hm': '61', 'hn': '504', 'hr': '385', 'ht': '509', 'hu': '36', 'id': '62',
+      'ie': '353', 'il': '972', 'im': '44', 'in': '91', 'io': '246', 'iq': '964',
+      'ir': '98', 'is': '354', 'it': '39', 'je': '44', 'jm': '1', 'jo': '962',
+      'jp': '81', 'ke': '254', 'kg': '996', 'kh': '855', 'ki': '686', 'km': '269',
+      'kn': '1', 'kp': '850', 'kr': '82', 'kw': '965', 'ky': '1', 'kz': '7',
+      'la': '856', 'lb': '961', 'lc': '1', 'li': '423', 'lk': '94', 'lr': '231',
+      'ls': '266', 'lt': '370', 'lu': '352', 'lv': '371', 'ly': '218', 'ma': '212',
+      'mc': '377', 'md': '373', 'me': '382', 'mf': '590', 'mg': '261', 'mh': '692',
+      'mk': '389', 'ml': '223', 'mm': '95', 'mn': '976', 'mo': '853', 'mp': '1',
+      'mq': '596', 'mr': '222', 'ms': '1', 'mt': '356', 'mu': '230', 'mv': '960',
+      'mw': '265', 'mx': '52', 'my': '60', 'mz': '258', 'na': '264', 'nc': '687',
+      'ne': '227', 'nf': '672', 'ng': '234', 'ni': '505', 'nl': '31', 'no': '47',
+      'np': '977', 'nr': '674', 'nu': '683', 'nz': '64', 'om': '968', 'pa': '507',
+      'pe': '51', 'pf': '689', 'pg': '675', 'ph': '63', 'pk': '92', 'pl': '48',
+      'pm': '508', 'pn': '64', 'pr': '1', 'ps': '970', 'pt': '351', 'pw': '680',
+      'py': '595', 'qa': '974', 're': '262', 'ro': '40', 'rs': '381', 'ru': '7',
+      'rw': '250', 'sa': '966', 'sb': '677', 'sc': '248', 'sd': '249', 'se': '46',
+      'sg': '65', 'sh': '290', 'si': '386', 'sj': '47', 'sk': '421', 'sl': '232',
+      'sm': '378', 'sn': '221', 'so': '252', 'sr': '597', 'ss': '211', 'st': '239',
+      'sv': '503', 'sx': '1', 'sy': '963', 'sz': '268', 'tc': '1', 'td': '235',
+      'tf': '262', 'tg': '228', 'th': '66', 'tj': '992', 'tk': '690', 'tl': '670',
+      'tm': '993', 'tn': '216', 'to': '676', 'tr': '90', 'tt': '1', 'tv': '688',
+      'tw': '886', 'tz': '255', 'ua': '380', 'ug': '256', 'um': '1', 'us': '1',
+      'uy': '598', 'uz': '998', 'va': '39', 'vc': '1', 've': '58', 'vg': '1',
+      'vi': '1', 'vn': '84', 'vu': '678', 'wf': '681', 'ws': '685', 'xk': '383',
+      'ye': '967', 'yt': '262', 'za': '27', 'zm': '260', 'zw': '263'
+    };
+
+    /**
+     * The E.164 country-calling-code prefixes, longest-first, used to split a
+     * phone number that begins with "+". Covers every dial code in the map.
+     */
+    var dialPrefixes = (function () {
+      var codes = [];
+      for (var k in countryDialCode) {
+        if (Object.prototype.hasOwnProperty.call(countryDialCode, k)) {
+          codes.push(countryDialCode[k]);
+        }
+      }
+      codes.sort(function (a, b) { return b.length - a.length; });
+      return codes;
+    }());
+
     /** Lowercase and strip spaces / _ / - (the doc's recommended step). */
     function normalize(str) {
       return String(str || '').toLowerCase().replace(/[\s_-]/g, '');
@@ -1030,6 +1094,120 @@
         }
       }
 
+      return null;
+    }
+
+    /** Strip everything but digits from a string (e.g. a phone number). */
+    function digitsOnly(str) {
+      return String(str || '').replace(/\D/g, '');
+    }
+
+    /**
+     * Split a stored phone number into its E.164 country calling code and the
+     * national part (digits only). Returns { code, national } or, when no
+     * leading country code is present, { code: null, national }.
+     *
+     * Supports both "+441234567890" and the national-prefix (trunk) style
+     * where a country code appears without a leading "+" when it can be
+     * recognised. A truly bare local number yields code: null.
+     *
+     * @param {string} phone
+     * @returns {{code: string|null, national: string}}
+     */
+    function splitPhone(phone) {
+      var digits = digitsOnly(phone);
+      if (!digits) return { code: null, national: '' };
+
+      var startsWithPlus = /^[^\d]*\+/.test(String(phone || '').trim());
+
+      var code = null;
+      var national = digits;
+
+      if (startsWithPlus) {
+        // Try every dial prefix, longest first.
+        for (var i = 0; i < dialPrefixes.length; i++) {
+          var p = dialPrefixes[i];
+          if (digits.indexOf(p) === 0) {
+            code = p;
+            national = digits.slice(p.length);
+            break;
+          }
+        }
+        // Fall back: treat the first 1-3 digits as the code (E.164 rule).
+        if (code === null) {
+          var guess = digits.slice(0, 3);
+          code = guess;
+          national = digits.slice(3);
+        }
+      } else {
+        // No "+": for common 1/44/7/33-style short trunk prefixes we can still
+        // detect a leading code, but be conservative and return code:null so a
+        // normal single phone input never loses digits.
+        code = null;
+        national = digits;
+      }
+
+      return { code: code, national: national };
+    }
+
+    /** Normalise an option's text/value for country-code matching. */
+    function phoneOptionKey(text) {
+      var s = String(text || '');
+      var digits = s.replace(/\D/g, '');
+      var name = String(text || '').toLowerCase().replace(/[\s_'-]/g, '');
+      var sign = s.indexOf('+') !== -1;
+      return { digits: digits, name: name, sign: sign, raw: s };
+    }
+
+    /**
+     * Match a stored phone number against a country-code <select>'s options.
+     * Returns the option value to set, or null if no option is a country
+     * calling code for the stored phone.
+     *
+     * Handles options whose text/value use either the dialing code ("+44",
+     * "44", "GB"), a full country name ("United Kingdom"), ISO codes, or a
+     * mix. Reuses `countryAliases` and `countryDialCode` so a stored phone
+     * ("+44 20 7946 0958") selects the right option regardless of format.
+     *
+     * @param {Array<{text: string, value: string}>} options
+     * @param {string} phone the stored profile phone
+     * @returns {string|null}
+     */
+    function matchPhoneCountryCode(options, phone) {
+      var split = splitPhone(phone);
+      if (split.code === null || !options || options.length === 0) return null;
+
+      var code = split.code;
+      // ISO code(s) that produce this dialing code, for name/flag option text.
+      var isoForCode = [];
+      for (var iso in countryDialCode) {
+        if (Object.prototype.hasOwnProperty.call(countryDialCode, iso) &&
+            countryDialCode[iso] === code) {
+          isoForCode.push(iso);
+        }
+      }
+
+      for (var i = 0; i < options.length; i++) {
+        var o = options[i];
+        var k = phoneOptionKey(o.text);
+        var kv = phoneOptionKey(o.value);
+
+        var dial = k.digits || kv.digits || '';
+        // Match when the option's digits match the dialing code (with or
+        // without a leading "+" / leading 0 padding beyond the code length).
+        if (dial && (dial === code || dial.replace(/^0+/, '') === code)) {
+          return o.value;
+        }
+        // Match when the option text/value is an ISO code for this dial code.
+        if (isoForCode.indexOf(k.name) !== -1 || isoForCode.indexOf(kv.name) !== -1) {
+          return o.value;
+        }
+        // Match when a full country name translates to this dial code.
+        var isoFromName = countryCode(o.text) || countryCode(o.value);
+        if (isoFromName && isoForCode.indexOf(isoFromName) !== -1) {
+          return o.value;
+        }
+      }
       return null;
     }
 
@@ -1151,7 +1329,11 @@
       autocompleteBucket: autocompleteBucket,
       applyPatternRe: applyPatternRe,
       countryCode: countryCode,
+      countryDialCode: countryDialCode,
       matchSelectOption: matchSelectOption,
+      digitsOnly: digitsOnly,
+      splitPhone: splitPhone,
+      matchPhoneCountryCode: matchPhoneCountryCode,
       classify: classify,
       extractPassengerNum: extractPassengerNum,
       detectOffset: detectOffset,

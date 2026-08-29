@@ -634,5 +634,66 @@ test('extra nationality keywords map to nationality only', () => {
   }
 });
 
+// ---------------------------------------------------------------------------
+// 16. Split-phone fields: a country-code <select> + national number input.
+// ---------------------------------------------------------------------------
+const { digitsOnly, splitPhone, matchPhoneCountryCode } = matcher;
+
+test('digitsOnly strips everything but digits', () => {
+  assert.equal(digitsOnly('+1 (415) 555-0123'), '14155550123');
+  assert.equal(digitsOnly('0044 20 7946 0958'), '00442079460958');
+  assert.equal(digitsOnly(''), '');
+  assert.equal(digitsOnly(null), '');
+});
+
+test('splitPhone extracts country code + national number from a leading +', () => {
+  assert.deepEqual(splitPhone('+1 (415) 555-0123'), { code: '1', national: '4155550123' });
+  assert.deepEqual(splitPhone('+44 20 7946 0958'), { code: '44', national: '2079460958' });
+  assert.deepEqual(splitPhone('+49 151 2345 6789'), { code: '49', national: '15123456789' });
+  assert.deepEqual(splitPhone('+972 52 123 4567'), { code: '972', national: '521234567' });
+  assert.deepEqual(splitPhone('+33 1 42 68 53 00'), { code: '33', national: '142685300' });
+});
+
+test('splitPhone leaves a bare local number untouched (code null)', () => {
+  assert.deepEqual(splitPhone('415 555 0123'), { code: null, national: '4155550123' });
+  assert.deepEqual(splitPhone(''), { code: null, national: '' });
+  assert.deepEqual(splitPhone(null), { code: null, national: '' });
+});
+
+test('matchPhoneCountryCode matches the stored phone onto a dial-code select', () => {
+  const opts = [
+    { text: '+1 (United States)', value: '+1' },
+    { text: '+44 (United Kingdom)', value: '+44' },
+    { text: '+49 (Germany)', value: '+49' },
+    { text: '+33 (France)', value: '+33' }
+  ];
+  assert.equal(matchPhoneCountryCode(opts, '+1 (415) 555-0123'), '+1');
+  assert.equal(matchPhoneCountryCode(opts, '+44 20 7946 0958'), '+44');
+  assert.equal(matchPhoneCountryCode(opts, '+49 151 2345 6789'), '+49');
+  assert.equal(matchPhoneCountryCode(opts, '+33 1 42 68 53 00'), '+33');
+});
+
+test('matchPhoneCountryCode translates a phone onto name/code-only options', () => {
+  const opts = [
+    { text: 'United States', value: 'US' },
+    { text: 'United Kingdom', value: 'GB' },
+    { text: 'France', value: 'FR' }
+  ];
+  assert.equal(matchPhoneCountryCode(opts, '+1 415 555 0123'), 'US');
+  assert.equal(matchPhoneCountryCode(opts, '+44 20 7946 0958'), 'GB');
+  assert.equal(matchPhoneCountryCode(opts, '+33 1 42 68 53 00'), 'FR');
+});
+
+test('matchPhoneCountryCode returns null when there is no country-code match', () => {
+  const opts = [
+    { text: 'Mr', value: 'Mr' },
+    { text: 'Mrs', value: 'Mrs' }
+  ];
+  assert.equal(matchPhoneCountryCode(opts, '+44 20 7946 0958'), null);
+  assert.equal(matchPhoneCountryCode([], '+44 20 7946 0958'), null);
+  // A stored number with no leading country code cannot be split/match code.
+  assert.equal(matchPhoneCountryCode([{ text: '+44', value: '+44' }], '4155550123'), null);
+});
+
 
 

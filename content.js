@@ -31,6 +31,41 @@
     ].join(' ');
   }
 
+  // True when an option's text/value "looks like" a country calling code:
+  // a leading "+", a recognized short numeric code, or a known country name.
+  function optionLooksLikeCountryCode(o) {
+    const text = String(o.text || '');
+    const value = String(o.value || '');
+    if (text.indexOf('+') !== -1 || value.indexOf('+') !== -1) return true;
+    const t = text.toLowerCase().replace(/[\s_'-]/g, '');
+    const v = value.toLowerCase().replace(/[\s_'-]/g, '');
+    if (matcher.countryDialCode && (matcher.countryDialCode[t] || matcher.countryDialCode[v])) return true;
+    // Whole token matches an ISO code or full country name.
+    if (matcher.countryCode(text) || matcher.countryCode(value)) return true;
+    return false;
+  }
+
+  // A phone-bucket <select> is treated as the "country code" half when at
+  // least one of its options looks like a country calling code.
+  function isCountryCodeSelect(el) {
+    if (!el || el.tagName !== 'SELECT') return false;
+    const opts = el.options ? Array.from(el.options) : [];
+    return opts.some(optionLooksLikeCountryCode);
+  }
+
+  function setSelectValue(el, opts, value) {
+    let matched = matcher.matchSelectOption(opts, value);
+    if (matched === null) {
+      // Fall back to country-code matching (e.g. a phone dial-code <select>).
+      matched = matcher.matchPhoneCountryCode(opts, value);
+    }
+    if (matched !== null) {
+      el.value = matched;
+      return true;
+    }
+    return false;
+  }
+
   function setValue(el, value) {
     if (!el || value === undefined || value === null || value === '') return false;
 
@@ -38,11 +73,7 @@
 
     if (el.tagName === 'SELECT') {
       const opts = Array.from(el.options, (o) => ({ text: o.text, value: o.value }));
-      const matched = matcher.matchSelectOption(opts, value);
-      if (matched !== null) {
-        el.value = matched;
-        didWrite = true;
-      }
+      didWrite = setSelectValue(el, opts, value);
     } else if (el.type === 'date' && value) {
       // Only accept values that are valid dates for a <input type="date">;
       // an arbitrary string (e.g. a passport number) would silently clear it.
@@ -63,6 +94,35 @@
     el.dispatchEvent(new Event('blur', { bubbles: true }));
 
     return true;
+  }
+
+  // Fill the phone fields for one profile. Handles the common "country-code
+  // <select> + national number input" pair: the select gets the country code,
+  // the remaining phone inputs get the national part only. Falls back to
+  // writing the whole stored phone when no country-code select is present.
+  function fillPhone(phoneFields, phone) {
+    let count = 0;
+    if (!phoneFields || phoneFields.length === 0 || !phone) return 0;
+
+    const codeSelect = phoneFields.find(isCountryCodeSelect);
+    if (codeSelect) {
+      const split = matcher.splitPhone(phone);
+      const opts = Array.from(codeSelect.options, (o) => ({ text: o.text, value: o.value }));
+      if (setSelectValue(codeSelect, opts, phone)) count++;
+      // Every other phone field is the national-number counterpart.
+      const national = split.national;
+      for (const el of phoneFields) {
+        if (el === codeSelect) continue;
+        if (national && setValue(el, national)) count++;
+      }
+      return count;
+    }
+
+    // No country-code select: plain phone field(s), whole number.
+    for (const el of phoneFields) {
+      if (setValue(el, phone)) count++;
+    }
+    return count;
   }
 
   function autofillForm(profiles) {
@@ -110,7 +170,7 @@
       if (fieldsFor.passportIssuedAt.length && setValue(fieldsFor.passportIssuedAt[0], profile.passportIssuedAt)) filledCount++;
       if (fieldsFor.passportExpiresAt.length && setValue(fieldsFor.passportExpiresAt[0], profile.passportExpiresAt)) filledCount++;
       if (fieldsFor.dob.length && setValue(fieldsFor.dob[0], profile.dob)) filledCount++;
-      if (fieldsFor.phone.length && setValue(fieldsFor.phone[0], profile.phone)) filledCount++;
+      filledCount += fillPhone(fieldsFor.phone, profile.phone);
       if (fieldsFor.email.length && setValue(fieldsFor.email[0], profile.email)) filledCount++;
       if (fieldsFor.nationality.length && setValue(fieldsFor.nationality[0], profile.nationality)) filledCount++;
       if (fieldsFor.passportIssuedCountry.length && setValue(fieldsFor.passportIssuedCountry[0], profile.passportIssuedCountry)) filledCount++;

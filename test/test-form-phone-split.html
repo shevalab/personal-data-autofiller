@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Autofiller Test — Split Phone (country code + number)</title>
+  <style>
+    :root { font-family: system-ui, sans-serif; background: #f3f6f9; color: #17202a; }
+    body { margin: 0; padding: 32px 16px; }
+    main { max-width: 760px; margin: 0 auto; }
+    h1 { margin-top: 0; }
+    form { display: grid; gap: 20px; }
+    fieldset { border: 1px solid #cbd5df; border-radius: 8px; background: #fff; padding: 20px; }
+    legend { padding: 0 8px; font-weight: 700; }
+    .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    label { display: grid; gap: 6px; font-weight: 600; }
+    input, select { box-sizing: border-box; border: 1px solid #9aa7b2; border-radius: 4px; padding: 9px 10px; font: inherit; }
+    .phone-row { display: grid; grid-template-columns: 160px 1fr; gap: 0; align-items: center; }
+    .phone-row select { border-radius: 4px 0 0 4px; }
+    .phone-row input { border-left: 0; border-radius: 0 4px 4px 0; }
+    #eventLog { min-height: 48px; margin: 0; padding: 12px; overflow: auto; background: #17202a; color: #d8e2eb; border-radius: 4px; white-space: pre-wrap; }
+    button { width: fit-content; padding: 10px 16px; border: 0; border-radius: 4px; background: #1769aa; color: #fff; font: inherit; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Autofiller Test Form — Split Phone</h1>
+    <p class="intro">The phone is split into a country-code <code>&lt;select&gt;</code> and a national-number <code>&lt;input&gt;</code>. The extension should fill the select from the stored dialing code and the input with the national part only.</p>
+
+    <form id="testForm">
+      <fieldset>
+        <legend>Passenger</legend>
+        <div class="fields">
+          <label>Full name
+            <input name="full_name" autocomplete="name" placeholder="Full name">
+          </label>
+          <label>Phone
+            <span class="phone-row">
+              <select name="phone_country_code" autocomplete="tel-country-code" title="Country code">
+                <option value="">+ (choose)</option>
+                <option value="+1">🇺🇸 +1 (United States)</option>
+                <option value="+44">🇬🇧 +44 (United Kingdom)</option>
+                <option value="+49">🇩🇪 +49 (Germany)</option>
+                <option value="+33">🇫🇷 +33 (France)</option>
+                <option value="+972">🇮🇱 +972 (Israel)</option>
+              </select>
+              <input name="phone" type="tel" autocomplete="tel" placeholder="Phone number">
+            </span>
+          </label>
+          <label>Email
+            <input name="email" type="email" autocomplete="email" placeholder="Email address">
+          </label>
+        </div>
+      </fieldset>
+
+      <button type="button" id="showValues">Show current values</button>
+      <pre id="eventLog">Events will appear here when the extension fills a field.</pre>
+    </form>
+  </main>
+
+  <script>
+    const eventLog = document.getElementById('eventLog');
+    const trackedFields = document.querySelectorAll('input, select');
+    trackedFields.forEach((field) => {
+      field.addEventListener('input', () => { eventLog.textContent = `input event: ${field.name || field.id}`; });
+      field.addEventListener('change', () => { eventLog.textContent += `\nchange event: ${field.name || field.id}`; });
+      field.addEventListener('blur', () => { eventLog.textContent += `\nblur event: ${field.name || field.id}`; });
+    });
+    document.getElementById('showValues').addEventListener('click', () => {
+      eventLog.textContent = Array.from(trackedFields).map((f) => `${f.name || f.id}: ${f.value}`).join('\n');
+    });
+  </script>
+</body>
+</html>
