@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Autofiller Test — Name collisions &amp; issue date vs country</title>
+  <style>
+    :root { font-family: system-ui, sans-serif; background: #f3f6f9; color: #17202a; }
+    body { margin: 0; padding: 32px 16px; }
+    main { max-width: 1040px; margin: 0 auto; }
+    h1 { margin-top: 0; }
+    .intro { color: #52606d; }
+    form { display: grid; gap: 20px; }
+    fieldset { border: 1px solid #cbd5df; border-radius: 8px; background: #fff; padding: 20px; }
+    legend { padding: 0 8px; font-weight: 700; }
+    .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    label { display: grid; gap: 6px; font-weight: 600; }
+    input, select { box-sizing: border-box; width: 100%; border: 1px solid #9aa7b2; border-radius: 4px; padding: 9px 10px; font: inherit; }
+    #eventLog { min-height: 48px; margin: 0; padding: 12px; overflow: auto; background: #17202a; color: #d8e2eb; border-radius: 4px; white-space: pre-wrap; }
+    button { width: fit-content; padding: 10px 16px; border: 0; border-radius: 4px; background: #1769aa; color: #fff; font: inherit; cursor: pointer; }
+    .expect { color: #704214; background: #fdf3e7; border-left: 4px solid #d97706; padding: 8px 12px; border-radius: 4px; margin: 0 0 16px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Autofiller Test — Non-person "name" fields &amp; issue date vs country</h1>
+    <p class="intro">Two separate bug classes from the matching rewrite.</p>
+
+    <fieldset>
+      <legend>A) Non-person "name" fields must NOT get the full name</legend>
+      <p class="expect"><b>Expected:</b> only <code>traveler_full_name</code> and <code>traveler_first/last_name</code> are filled. <code>company_name</code>, <code>airline_name</code> and <code>cardholder_name</code> must be left empty.</p>
+      <div class="fields">
+        <label>Traveler full name <input name="traveler_full_name" autocomplete="name"></label>
+        <label>Company name <input name="company_name" placeholder="Company name"></label>
+        <label>Airline name <input name="airline_name" placeholder="Airline"></label>
+        <label>Cardholder name <input name="cardholder_name" placeholder="Name on card"></label>
+        <label>First name <input name="traveler_first_name" autocomplete="given-name"></label>
+        <label>Last name <input name="traveler_last_name" autocomplete="family-name"></label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>B) Issue date vs issuing country must not cross-populate</legend>
+      <p class="expect"><b>Expected:</b> <code>country_of_issue</code> / <code>issuecountry</code> / <code>passport_issued_country</code> get the issuing-country value; <code>issue_date</code> / <code>passportissuedate</code> get the issue date. A passport number must never land in a date input.</p>
+      <div class="fields">
+        <label>Passport number <input name="pax_passport_number"></label>
+        <label>Issue date <input type="date" name="issue_date"></label>
+        <label>Passport issue date <input type="date" name="passportissuedate"></label>
+        <label>Country of issue <input name="country_of_issue"></label>
+        <label>Issue country <input name="issuecountry"></label>
+        <label>Passport issued country <input name="pax_passport_issued_country"></label>
+      </div>
+    </fieldset>
+
+    <button type="button" id="showValues">Show current values</button>
+    <pre id="eventLog">Events / values will appear here.</pre>
+  </main>
+
+  <script>
+    const eventLog = document.getElementById('eventLog');
+    const trackedFields = document.querySelectorAll('input, select');
+    trackedFields.forEach((field) => {
+      field.addEventListener('input', () => { eventLog.textContent = `input event: ${field.name || field.id}`; });
+      field.addEventListener('change', () => { eventLog.textContent += `\nchange event: ${field.name || field.id}`; });
+      field.addEventListener('blur', () => { eventLog.textContent += `\nblur event: ${field.name || field.id}`; });
+    });
+    document.getElementById('showValues').addEventListener('click', () => {
+      eventLog.textContent = Array.from(trackedFields).map((field) => `${field.name || field.id}: ${field.value}`).join('\n');
+    });
+  </script>
+</body>
+</html>
