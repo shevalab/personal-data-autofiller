@@ -4,7 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 const matcher = require('../matcher.js');
-const { classify, autocompleteBucket, extractPassengerNum, detectOffset, assignFields, normalize, matchesAny } = matcher;
+const { classify, autocompleteBucket, extractPassengerNum, detectOffset, assignFields, normalize, matchesAny, applyPatternRe } = matcher;
 
 // A tiny helper: classify a field from a name/id/placeholder etc.
 function nameClass(name, autocomplete) {
@@ -514,4 +514,51 @@ test('non-person "name" fields do NOT classify as fullName', () => {
   assert.ok(nameClass('full name').includes('fullName'));
   assert.ok(nameClass('passenger name').includes('fullName'));
 });
+
+// ---------------------------------------------------------------------------
+// patternRe: the general, data-driven regex rule mechanism (add + remove).
+// Rules run against the normalized attribute text and give structural rules
+// final say over token collisions.
+// ---------------------------------------------------------------------------
+const TEST_RULES = {
+  demo: [
+    { re: /zticket/i, add: 'frequentFlyer' },
+    { re: /passport\s*(?:issued|country)/i, remove: 'passport' }
+  ]
+};
+
+test('applyPatternRe adds a bucket on an "add" rule match', () => {
+  const buckets = applyPatternRe('zz_zticket_zz', ['title'], TEST_RULES);
+  assert.deepEqual(buckets, ['title', 'frequentFlyer']);
+});
+
+test('applyPatternRe does not duplicate an already-present bucket on "add"', () => {
+  const buckets = applyPatternRe('zz_zticket_zz', ['frequentFlyer'], TEST_RULES);
+  assert.deepEqual(buckets, ['frequentFlyer']);
+});
+
+test('applyPatternRe removes a bucket on a "remove" rule match', () => {
+  const buckets = applyPatternRe('passport_issued_at', ['passport', 'passportIssuedAt'], TEST_RULES);
+  assert.deepEqual(buckets, ['passportIssuedAt']);
+});
+
+test('applyPatternRe leaves buckets untouched when no rule matches', () => {
+  assert.deepEqual(applyPatternRe('email', ['email'], TEST_RULES), ['email']);
+});
+
+test('applyPatternRe with no ruleset uses the engine patternRe', () => {
+  // Real engine rule: passport sub-fields drop the generic passport bucket.
+  const buckets = applyPatternRe('passport_issued_at', ['passport', 'passportIssuedAt']);
+  assert.deepEqual(buckets, ['passportIssuedAt']);
+});
+
+test('a suppressible bucket is added back by a later positive patternRe rule', () => {
+  const rules = {
+    a: [{ re: /passport\s*(?:issued|country)/i, remove: 'passportIssuedAt' }],
+    b: [{ re: /passport issued/i, add: 'passportIssuedAt' }]
+  };
+  const buckets = applyPatternRe('passport_issued_at', ['passportIssuedAt'], rules);
+  assert.ok(buckets.includes('passportIssuedAt'), 'final bucket state keeps passportIssuedAt');
+});
+
 

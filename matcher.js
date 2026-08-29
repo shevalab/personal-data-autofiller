@@ -122,6 +122,55 @@
       ]
     };
 
+    /**
+     * Optional structural matching rules (regular expressions). Unlike the
+     * keyword tables (which match whole tokens), these express relationships
+     * the token approach cannot: "passport NOT followed by issue/expiry/country",
+     * "country_of_issue is an issuing country, not an issue date", and
+     * "company_name is not a person's full name".
+     *
+     * Rules are applied AFTER keyword matching, in order, against the
+     * normalized attribute text (see `normalizeAttr`). Each rule is one of:
+     *   { re, add: 'bucket' }    -> on match, add the bucket (positive)
+     *   { re, remove: 'bucket' } -> on match, remove the bucket (suppressor)
+     */
+    var patternRe = {
+      passport: [
+        { re: /passport\s*(?:issued|issue|expir|expiration|valid|country|nationality)/i, remove: 'passport' }
+      ],
+      passportIssuedAt: [
+        { re: /\b(?:issuing|issue|issued)\s*(?:country|nationality)|\bcountry\s+(?:of\s+)?issue\b|issuecountry/i, remove: 'passportIssuedAt' }
+      ],
+      fullName: [
+        { re: /\b(?:company|airline|cardholder|customer|organization|organisation|business|agency|employer|institution|bank|school|website|domain|account|file|brand)\s+name\b/i, remove: 'fullName' }
+      ]
+    };
+
+    /**
+     * Apply patternRe rules to the bucket set; mutates `buckets` in place.
+     * @param {string} attrs raw attribute text (normalized internally)
+     * @param {string[]} buckets bucket array to mutate
+     * @param {Object} [rules] ruleset; defaults to the engine's `patternRe`
+     * @returns {string[]} the same `buckets` array
+     */
+    function applyPatternRe(attrs, buckets, rules) {
+      var n = normalizeAttr(attrs);
+      rules = rules || patternRe;
+      for (var key in rules) {
+        if (!Object.prototype.hasOwnProperty.call(rules, key)) continue;
+        rules[key].forEach(function (rule) {
+          if (!rule.re.test(n)) return;
+          if (rule.add) {
+            if (buckets.indexOf(rule.add) === -1) buckets.push(rule.add);
+          } else if (rule.remove) {
+            var idx = buckets.indexOf(rule.remove);
+            if (idx !== -1) buckets.splice(idx, 1);
+          }
+        });
+      }
+      return buckets;
+    }
+
     var BUCKETS = [
       'title', 'gender', 'fullName', 'firstName', 'lastName', 'middleName',
       'passport', 'passportIssuedAt', 'passportExpiresAt',
@@ -1004,45 +1053,9 @@
         buckets.splice(buckets.indexOf('fullName'), 1);
       }
 
-      // A bare "name" token also matches non-person fields ("company_name",
-      // "airline_name", "cardholder_name", ...). If such a qualifier token is
-      // present, drop the fullName bucket so we don't write a full name into
-      // an organization / corporate field.
-      if (buckets.indexOf('fullName') !== -1) {
-        var nameBlockers = [
-          'company', 'organization', 'organisation', 'business', 'agency',
-          'airline', 'cardholder', 'customer', 'employer', 'institution',
-          'bank', 'school', 'website', 'domain', 'account', 'file', 'brand'
-        ];
-        var blocked = nameBlockers.some(function (b) {
-          return matchesAny(attrs, [b]);
-        });
-        if (blocked) {
-          buckets.splice(buckets.indexOf('fullName'), 1);
-        }
-      }
-
-      // Disambiguate "issue date" vs "issuing country". "country_of_issue",
-      // "issuecountry", "issuing_country" contain both an "issue"-ish token and
-      // a country token; the country token is the more specific intent, so it
-      // must not also be claimed by the issue-date bucket (which would fill a
-      // date field with a country, or vice-versa).
-      var issuedAtSuppressors = ['nationality', 'passportIssuedCountry'];
-      if (buckets.indexOf('passportIssuedAt') !== -1 &&
-          issuedAtSuppressors.some(function (b) { return buckets.indexOf(b) !== -1; })) {
-        buckets.splice(buckets.indexOf('passportIssuedAt'), 1);
-      }
-
-      // A "passport" field that is actually one of the passport sub-fields
-      // (issue date, expiry date, issuing country) has "passport" as a prefix
-      // and would otherwise be claimed by the number bucket. The more specific
-      // sub-bucket wins; drop the generic `passport` claim so the number is
-      // not written into a date/country input (and vice-versa).
-      var passportSubBuckets = ['passportIssuedAt', 'passportExpiresAt', 'passportIssuedCountry'];
-      if (buckets.indexOf('passport') !== -1 &&
-          passportSubBuckets.some(function (b) { return buckets.indexOf(b) !== -1; })) {
-        buckets.splice(buckets.indexOf('passport'), 1);
-      }
+      // Structural regex rules get final say over token collisions (passport
+      // sub-fields, issue-date vs issuing-country, non-person "name" fields).
+      applyPatternRe(attrs, buckets);
 
       return buckets;
     }
@@ -1113,12 +1126,14 @@
     return {
       BUCKETS: BUCKETS,
       patterns: patterns,
+      patternRe: patternRe,
       autocompleteMap: autocompleteMap,
       countryAliases: countryAliases,
       normalize: normalize,
       normalizeAttr: normalizeAttr,
       matchesAny: matchesAny,
       autocompleteBucket: autocompleteBucket,
+      applyPatternRe: applyPatternRe,
       countryCode: countryCode,
       matchSelectOption: matchSelectOption,
       classify: classify,
