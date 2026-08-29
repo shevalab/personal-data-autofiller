@@ -76,12 +76,13 @@
     profiles.forEach((profile, pIndex) => {
       const fieldsFor = profileFields[pIndex];
 
-      let first = '', last = '';
+      let first = '', middle = '', last = '';
       if (profile.fullName) {
         const parts = profile.fullName.trim().split(/\s+/);
         if (parts.length >= 2) {
           first = parts[0];
-          last = parts.slice(1).join(' ');
+          middle = parts.slice(1, -1).join(' ');
+          last = parts[parts.length - 1];
         }
       }
 
@@ -89,6 +90,7 @@
       if (fieldsFor.gender.length && setValue(fieldsFor.gender[0], profile.gender)) filledCount++;
       if (fieldsFor.fullName.length && setValue(fieldsFor.fullName[0], profile.fullName)) filledCount++;
       if (fieldsFor.firstName.length && first && setValue(fieldsFor.firstName[0], first)) filledCount++;
+      if (fieldsFor.middleName.length && middle && setValue(fieldsFor.middleName[0], middle)) filledCount++;
       if (fieldsFor.lastName.length && last && setValue(fieldsFor.lastName[0], last)) filledCount++;
       if (fieldsFor.passport.length && setValue(fieldsFor.passport[0], profile.passport)) filledCount++;
       if (fieldsFor.passportIssuedAt.length && setValue(fieldsFor.passportIssuedAt[0], profile.passportIssuedAt)) filledCount++;

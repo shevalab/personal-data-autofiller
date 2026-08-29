@@ -10,7 +10,7 @@ A Chrome / Chromium / Edge (Manifest V3) extension that lets you save personal p
 - Heuristic field detection that works on many airline and booking sites
 - Field matching uses `name`, `id`, `placeholder`, `aria-label`, `data-testid`, the `autocomplete` attribute, associated `<label>` text, and a large keyword list
 - Robust multi-passenger support: detects 0-based and 1-based numbering, `passenger1_*` / `pax2_*` / `traveler_2_*` prefixes, and camelCase/bracket forms like `travelers[0].firstName`
-- Automatic first/last-name splitting from the stored full name
+- Automatic first/middle/last-name splitting from the stored full name
 - Local storage only (data never leaves your browser)
 - Compact, two-column popup UI
 
@@ -40,7 +40,7 @@ A Chrome / Chromium / Edge (Manifest V3) extension that lets you save personal p
 ## Tips for Best Results
 
 - Many airline sites use numbered fields (`passenger1_name`, `traveler_2_passport`, etc.). The extension looks for these patterns.
-- If a site uses first-name + last-name fields, the extension tries to split the full name automatically.
+- If a site uses first-name + last-name fields (and a middle-name field), the extension tries to split the full name automatically.
 - After filling, always double-check the form — especially date formats and country dropdowns.
 - Some sites protect fields with heavy JavaScript frameworks; if a field does not update, try clicking into it first or filling manually.
 
@@ -55,7 +55,7 @@ Run them with Node (v18+ ships `node --test`):
 npm test
 ```
 
-The tests verify every documented profile bucket (name, first/last/middle,
+The tests verify every documented profile bucket (name, first/middle/last,
 passport, issue/expiry, DOB, gender, nationality, phone, email, title, issuing
 country), the HTML `autocomplete` mapping, and multi-passenger matching
 (1-based prefixes, 0-based bracket forms, shared fields).
