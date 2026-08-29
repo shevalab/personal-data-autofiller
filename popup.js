@@ -113,6 +113,20 @@ document.addEventListener('DOMContentLoaded', () => {
         persistSlots();
       });
 
+      const moveUpBtn = document.createElement('button');
+      moveUpBtn.textContent = '↑';
+      moveUpBtn.className = 'btn-move';
+      moveUpBtn.title = 'Move up';
+      moveUpBtn.disabled = slotIdx === 0;
+      moveUpBtn.addEventListener('click', () => moveSlot(slotIdx, -1));
+
+      const moveDownBtn = document.createElement('button');
+      moveDownBtn.textContent = '↓';
+      moveDownBtn.className = 'btn-move';
+      moveDownBtn.title = 'Move down';
+      moveDownBtn.disabled = slotIdx === slotProfiles.length - 1;
+      moveDownBtn.addEventListener('click', () => moveSlot(slotIdx, 1));
+
       const removeBtn = document.createElement('button');
       removeBtn.textContent = '×';
       removeBtn.className = 'btn-remove';
@@ -125,9 +139,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
       row.appendChild(label);
       row.appendChild(select);
+      row.appendChild(moveUpBtn);
+      row.appendChild(moveDownBtn);
       row.appendChild(removeBtn);
       slotsContainer.appendChild(row);
     });
+  }
+
+  function moveSlot(slotIdx, dir) {
+    const target = slotIdx + dir;
+    if (target < 0 || target >= slotProfiles.length) return;
+    const tmp = slotProfiles[slotIdx];
+    slotProfiles[slotIdx] = slotProfiles[target];
+    slotProfiles[target] = tmp;
+    rebuildSlotSelects();
+    persistSlots();
   }
 
   addSlotButton.addEventListener('click', () => {
